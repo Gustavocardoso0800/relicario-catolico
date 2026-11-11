@@ -36,3 +36,8 @@ html[data-theme=dark]{--paper:#171417;--ink:#f4ebe2;--muted:#c1b4a9;--line:#443b
 .product-info h3,.detail-head h2{font-family:'Benton Destaque',Impact,'Arial Narrow',sans-serif;font-weight:900;letter-spacing:.015em;line-height:1.1}.product-info h3{font-size:25px}.detail-head h2{font-size:28px}@media(max-width:520px){.product-info h3{font-size:23px}.detail-head h2{font-size:24px}}
 /* Nomes dos produtos com leitura confortável em telas pequenas. */
 .product-info h3,.detail-head h2{font-family:'DM Sans',Arial,sans-serif;font-weight:600;letter-spacing:0;line-height:1.4}.product-info h3{font-size:17px}.detail-head h2{font-size:21px}@media(max-width:520px){.product-info h3{font-size:15px}.detail-head h2{font-size:19px}}
+
+/* Encaixe da foto ocupa a caixa inteira, inclusive quando a imagem é horizontal. */
+.product-image{position:relative;overflow:hidden;aspect-ratio:1/1}
+.product-image .product-view-image{position:absolute;inset:0;width:100%;height:100%}
+.product-image .product-view-image img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center}
