@@ -80,7 +80,7 @@ function aplicarConfiguracoes(d){
   }
   if (d.sobre) document.querySelector('.story p:not(.eyebrow)').textContent=d.sobre;
 }
-const mostrarHero = () => { const hero = document.querySelector('.hero'); if (hero) hero.style.visibility = ''; };
+const mostrarHero = () => { const hero = document.querySelector('.hero'); if (hero) hero.style.opacity = ''; };
 if (catalogoOnline) requisicao('/rest/v1/configuracoes_loja?id=eq.1&select=*').then(rows=>{if(rows[0])aplicarConfiguracoes(rows[0]);}).catch(()=>{}).finally(mostrarHero); else mostrarHero();
 const themeButton = $('#theme-toggle');
 let theme; try { theme=localStorage.getItem('relicario-tema'); } catch (_) {}
