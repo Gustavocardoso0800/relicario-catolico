@@ -50,3 +50,5 @@ html[data-theme=dark]{--paper:#171417;--ink:#f4ebe2;--muted:#c1b4a9;--line:#443b
 .nav-inner{height:auto;min-height:48px;flex-wrap:wrap;justify-content:center;row-gap:0}.nav-inner a{padding-top:10px;padding-bottom:10px}.filters{flex-wrap:wrap}
 
 .order-button{margin-top:8px}html[data-theme=dark] .add-button:disabled{background:#716963;color:#fff;cursor:not-allowed}
+
+.product-price .old-price{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-bottom:4px}.product-price strong{display:block;color:var(--wine)}
