@@ -2,9 +2,11 @@ const $ = (selector) => document.querySelector(selector);
 const grid = $('#product-grid');
 const catalogoOnline = typeof configOK === 'function' && configOK();
 if (catalogoOnline) PRODUCTS = [];
+let catalogoCarregado = !catalogoOnline;
 let category = new URLSearchParams(location.search).get('categoria') || 'Todos';
 let search = '';
 let cart = {};
+let numeroLoja = '5591992247847';
 try { const saved = JSON.parse(localStorage.getItem('relicario-carrinho') || '{}'); cart = saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {}; } catch (_) { cart = {}; }
 const byId = (id) => PRODUCTS.find((p) => p.id === id);
 const stock = p => Number.isInteger(p.estoque) && p.estoque >= 0 ? p.estoque : null;
@@ -34,7 +36,7 @@ function renderCart() {
   const totalLine = entries.length && !hasUnknown ? `\nTotal dos produtos: ${price(knownTotal)}\n` : '';
   const message = `Olá! Gostaria de fazer um pedido no Relicário Católico:\n\n${lines.join('\n')}${totalLine}\nPoderia confirmar a disponibilidade, os valores e a entrega em Breves?`;
   const checkout = $('#checkout');
-  checkout.href = entries.length ? `https://wa.me/5591992247847?text=${encodeURIComponent(message)}` : '#';
+  checkout.href = entries.length ? `https://wa.me/${numeroLoja}?text=${encodeURIComponent(message)}` : '#';
   checkout.classList.toggle('disabled', !entries.length);
   checkout.setAttribute('aria-disabled', String(!entries.length));
 }
@@ -54,8 +56,20 @@ let current=0;const slides=[...document.querySelectorAll('.slide')],dots=[...doc
 search=new URLSearchParams(location.search).get('busca') || ''; $('#search').value=search; document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===category)); $('#year').textContent=new Date().getFullYear();showSlide(0);renderProducts();if (!catalogoOnline) renderCart(); else { $('#checkout').classList.add('disabled'); $('#checkout').setAttribute('aria-disabled','true'); }
 
 // Configure o endereço do Instagram quando informado.
-const INSTAGRAM_URL = '';
-if (INSTAGRAM_URL) document.querySelectorAll('.instagram-link').forEach(a => { a.href=INSTAGRAM_URL; a.hidden=false; });
+function aplicarConfiguracoes(d){
+  if (/^\d{10,11}$/.test(d.whatsapp || '')) {
+    numeroLoja = '55' + d.whatsapp;
+    document.querySelectorAll('a[href^="https://wa.me/"]:not(#checkout)').forEach(a=>{a.href='https://wa.me/'+numeroLoja;});
+    const tel=document.querySelector('.footer-inner a[href^="https://wa.me/"]');
+    if(tel){const n=d.whatsapp;tel.textContent='('+n.slice(0,2)+') '+n.slice(2,-4)+'-'+n.slice(-4);}
+    if (catalogoCarregado) renderCart();
+  }
+  if (/^[A-Za-z0-9._]{1,30}$/.test(d.instagram || '')) document.querySelectorAll('.instagram-link').forEach(a=>{a.href='https://www.instagram.com/'+d.instagram+'/';a.hidden=false;});
+  if (d.titulo) document.querySelector('.slide-one h1').textContent=d.titulo;
+  if (d.subtitulo) document.querySelector('.slide-one .hero-copy > p:not(.eyebrow)').textContent=d.subtitulo;
+  if (d.sobre) document.querySelector('.story p:not(.eyebrow)').textContent=d.sobre;
+}
+if (catalogoOnline) requisicao('/rest/v1/configuracoes_loja?id=eq.1&select=*').then(rows=>{if(rows[0])aplicarConfiguracoes(rows[0]);}).catch(()=>{});
 const themeButton = $('#theme-toggle');
 let theme; try { theme=localStorage.getItem('relicario-tema'); } catch (_) {}
 function applyTheme(value){document.documentElement.dataset.theme=value;themeButton.textContent=value==='dark'?'☀':'☾';themeButton.setAttribute('aria-label',value==='dark'?'Ativar modo claro':'Ativar modo escuro');}
@@ -63,7 +77,7 @@ applyTheme(theme === 'dark' ? 'dark' : 'light');
 themeButton.addEventListener('click',()=>{let next=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(next);try{localStorage.setItem('relicario-tema',next)}catch(_) {}});
 $('#clear-cart').addEventListener('click',()=>{cart={};saveCart();});
 
-if (catalogoOnline) { requisicao('/rest/v1/produtos?select=*&order=nome.asc').then(rows=>{PRODUCTS=rows;renderProducts();renderCart();}).catch(()=>{PRODUCTS=[];renderProducts();renderCart();$('#empty-state').textContent='Não foi possível carregar o catálogo. Tente novamente mais tarde.';}); }
+if (catalogoOnline) { requisicao('/rest/v1/produtos?select=*&order=nome.asc').then(rows=>{PRODUCTS=rows;catalogoCarregado=true;renderProducts();renderCart();}).catch(()=>{PRODUCTS=[];renderProducts();renderCart();$('#empty-state').textContent='Não foi possível carregar o catálogo. Tente novamente mais tarde.';}); }
 
 // Visualização ampliada das fotos do produto.
 const dialogo = $('#product-dialog');
