@@ -67,6 +67,17 @@ function aplicarConfiguracoes(d){
   if (/^[A-Za-z0-9._]{1,30}$/.test(d.instagram || '')) document.querySelectorAll('.instagram-link').forEach(a=>{a.href='https://www.instagram.com/'+d.instagram+'/';a.hidden=false;});
   if (d.titulo) document.querySelector('.slide-one h1').textContent=d.titulo;
   if (d.subtitulo) document.querySelector('.slide-one .hero-copy > p:not(.eyebrow)').textContent=d.subtitulo;
+  if (typeof d.destaque1 === 'string') document.querySelector('.slide-one .eyebrow').textContent=d.destaque1;
+  if (typeof d.destaque2 === 'string') document.querySelector('.slide-two .eyebrow').textContent=d.destaque2;
+  if (d.titulo2) document.querySelector('.slide-two h2').textContent=d.titulo2;
+  if (d.subtitulo2) document.querySelector('.slide-two .hero-copy > p:not(.eyebrow)').textContent=d.subtitulo2;
+  for (const [seletor,chave] of [['.slide-one','imagem1'],['.slide-two','imagem2']]) {
+    const slide=document.querySelector(seletor);let imagem='';
+    try {const url=new URL(d[chave]);if(url.origin===CFG.url && url.pathname.startsWith('/storage/v1/object/public/produtos/'))imagem=url.href;}catch(_){}
+    slide.classList.toggle('has-banner-image',!!imagem);
+    if(imagem) slide.style.backgroundImage='linear-gradient(90deg, rgba(40,13,18,.87), rgba(40,13,18,.28)), url('+JSON.stringify(imagem)+')';
+    else slide.style.removeProperty('background-image');
+  }
   if (d.sobre) document.querySelector('.story p:not(.eyebrow)').textContent=d.sobre;
 }
 if (catalogoOnline) requisicao('/rest/v1/configuracoes_loja?id=eq.1&select=*').then(rows=>{if(rows[0])aplicarConfiguracoes(rows[0]);}).catch(()=>{});
